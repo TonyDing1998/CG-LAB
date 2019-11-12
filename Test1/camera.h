@@ -13,7 +13,7 @@ enum CameraMoveDirection
 float Yaw = -90.0f;
 float Pitch = 0.0f;
 float Sense = 0.05f;
-float Speed = 1.0f;
+float Speed = 3.0f;
 float Fov = 45.0f;
 
 class Camera

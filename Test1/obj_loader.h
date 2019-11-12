@@ -43,6 +43,14 @@ public:
 		glBindVertexArray(0);
 		glUseProgram(0);
 	}
+	/*void drawLamp(Shader& shader)
+	{
+		shader.use();
+		glBindVertexArray(this->lightVAOId);
+		glDrawArrays(GL_TRIANGLES, 0, this->verData.size());
+		glBindVertexArray(0);
+		glUseProgram(0);
+	}*/
 	Mesh(){}
 	Mesh(const vector<vertex>& vertData, GLint textureId)
 	{
@@ -59,11 +67,12 @@ public:
 	void de_allocate()
 	{
 		glDeleteVertexArrays(1,&this->VAOId);
+		glDeleteVertexArrays(1, &this->lightVAOId);
 		glDeleteBuffers(1, &this->VBOId);
 	}
 private:
 	vector<vertex> verData;
-	GLuint VAOId, VBOId;// lightVAOId;
+	GLuint VAOId, VBOId, lightVAOId;
 	GLint textureId;
 	void setupMesh()
 	{
@@ -82,11 +91,11 @@ private:
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		//glGenVertexArrays(1, &this->lightVAOId);
-		//glBindVertexArray(this->lightVAOId);
-		//glBindBuffer(GL_ARRAY_BUFFER, this->VBOId);
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
-		//glEnableVertexAttribArray(0);
+		/*glGenVertexArrays(1, &this->lightVAOId);
+		glBindVertexArray(this->lightVAOId);
+		glBindBuffer(GL_ARRAY_BUFFER, this->VBOId);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
+		glEnableVertexAttribArray(0);*/
 	}
 };
 class Loader

@@ -40,7 +40,7 @@ bool flag = true;
 float pitch = 0.0f;
 float fov = 45.0f;*/
 
-//glm::vec3 lightPos(1.0f, 1.0f, 1.0f);
+glm::vec3 lightPos(3.0f, 3.0f, 3.0f);
 
 int main()
 {
@@ -77,14 +77,20 @@ int main()
 	}
 	//加载obj文件,顶点数据存在vertData中
 	vector<vertex> verData;
-	if (!Loader::loadOBJ("./3D_model/SpaceShuttle.obj", verData))
+	if (!Loader::loadOBJ("./3D_model/Plane.obj", verData))//SpaceShuttle.obj
 	{
 		cerr << "Failed to load obj model.";
 		system("pause");
 		exit(-1);
 	}
-	
-	unsigned int myTexture = loadTexture("./3D_model/SpaceShuttle.png");
+	vector<vertex> Lantern;
+	if (!Loader::loadOBJ("./3D_model/Lantern.obj", Lantern))//SpaceShuttle.obj
+	{
+		cerr << "Failed to load the Lantern obj model.";
+		system("pause");
+		exit(-1);
+	}
+	//unsigned int myTexture = loadTexture("./3D_model/SpaceShuttle.png");
 	/*glGenTextures(1, &myTexture);//纹理数量为1，存储在myTexture数组中
 	glBindTexture(GL_TEXTURE_2D, myTexture);//绑定
 	// 为当前绑定的纹理对象设置环绕、过滤方式
@@ -237,10 +243,11 @@ int main()
 	ourShader.setInt("texture1", 0);
 	ourShader.setInt("texture2", 1);*/
 	Mesh mesh(verData);
+	Mesh Lamp(Lantern);
 	// build and compile our shader zprogram
 	// ------------------------------------
 	Shader ourShader("./vertex.vs", "./fragment.fs");
-	//Shader lightShader("./lamp_v.vs", "./lamp_f.fs");
+	Shader lampShader("./lamp_v.vs", "./lamp_f.fs");
 	glEnable(GL_DEPTH_TEST);//深度测试，开启后只显示位于最前面的部分
 	glEnable(GL_CULL_FACE);//面剔除，丢弃非正面朝向的面
 	// render loop
@@ -266,24 +273,28 @@ int main()
 		//glBindTexture(GL_TEXTURE_2D, texture1);
 		//glActiveTexture(GL_TEXTURE1);
 		//glBindTexture(GL_TEXTURE_2D, texture2);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, myTexture);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, myTexture);
 
 
 		// activate shader
 		ourShader.use();
+		ourShader.setVec3("objectColor", 0.5f, 0.5f, 0.5f);
+		ourShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+		ourShader.setVec3("lightPos", lightPos);
+		ourShader.setVec3("viewPos", camera.Pos);
 
 		// create transformations
 		glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
+		//glm::mat4 projection = glm::mat4(1.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		//view = glm::lookAt(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));//眼的位置；看的位置；世界中的向上的向量
 		//float radius = 1.0f;																										  
 		//float cameraX = sin(glfwGetTime())*radius;
 		//float cameraY = cos(glfwGetTime())*radius;
 		//view = glm::lookAt(glm::vec3(cameraX, 0.5f, cameraY), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));//平移(目标矩阵,方向向量)
-
 		if (flag)
 			view = camera.getViewMtx();
 			//view = glm::lookAt(cameraPos, cameraFront, cameraUp);
@@ -294,29 +305,37 @@ int main()
 			float cameraY = cos(glfwGetTime())*radius;
 			view = glm::lookAt(glm::vec3(cameraX, 0.5f, cameraY), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		}
+		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
 		float angle = 90.0f;
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));//旋转
 		//model = glm::scale(model, glm::vec3(1.5f,1.5f,1.5f));//缩放
 		ourShader.setMat4("model", model);
 		//projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f);//正交投影
-		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);//透视投影
+		//projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);//透视投影
 		// set完uniform变量之后，如果又对矩阵进行修改，则需要使用以下两步对着色器中的矩阵进行修改，否则修改不会生效
 		//unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
 		//unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
 		// pass them to the shaders (3 different ways)
 		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);//修改uniform变量(变量位置,数量,GL_FALSE指示矩阵时列优先矩阵(默认矩阵为列优先的)||GL_TRUE行优先,指针）
-		
 		// note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-		ourShader.setMat4("projection", projection);
+		//ourShader.setMat4("projection", projection);
 		mesh.draw(ourShader);
 		// render container
 		//glBindVertexArray(VAO);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glDrawArrays(GL_TRIANGLES, 0, 36);
 	
-		
+		lampShader.use();
+		lampShader.setMat4("model", model);
+		lampShader.setMat4("view", view);
+		lampShader.setMat4("projection", projection);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.2f));
+		lampShader.setMat4("model", model);
+		Lamp.draw(lampShader);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
@@ -329,7 +348,7 @@ int main()
 	//glDeleteBuffers(1, &VBO);
 
 	mesh.de_allocate();//释放VAO和VBO
-	glDeleteTextures(1, &myTexture);//删除纹理对象
+	//glDeleteTextures(1, &myTexture);//删除纹理对象
 	glfwTerminate();//释放glfw资源
 	return 0;
 }
