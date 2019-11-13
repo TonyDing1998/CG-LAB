@@ -83,8 +83,8 @@ int main()
 		system("pause");
 		exit(-1);
 	}
-	vector<vertex> Lantern;
-	if (!Loader::loadOBJ("./3D_model/Lantern.obj", Lantern))//SpaceShuttle.obj
+	vector<vertex> star;
+	if (!Loader::loadOBJ("./3D_model/star.obj", star))//SpaceShuttle.obj
 	{
 		cerr << "Failed to load the Lantern obj model.";
 		system("pause");
@@ -243,7 +243,7 @@ int main()
 	ourShader.setInt("texture1", 0);
 	ourShader.setInt("texture2", 1);*/
 	Mesh mesh(verData);
-	Mesh Lamp(Lantern);
+	Mesh LightSource(star);
 	// build and compile our shader zprogram
 	// ------------------------------------
 	Shader ourShader("./vertex.vs", "./fragment.fs");
@@ -280,7 +280,7 @@ int main()
 		// activate shader
 		ourShader.use();
 		ourShader.setVec3("objectColor", 0.5f, 0.5f, 0.5f);
-		ourShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+		ourShader.setVec3("lightColor", 1.0f, 1.0f, 0.65f);
 		ourShader.setVec3("lightPos", lightPos);
 		ourShader.setVec3("viewPos", camera.Pos);
 
@@ -333,9 +333,9 @@ int main()
 		lampShader.setMat4("projection", projection);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPos);
-		model = glm::scale(model, glm::vec3(0.2f));
+		model = glm::scale(model, glm::vec3(1.0f));
 		lampShader.setMat4("model", model);
-		Lamp.draw(lampShader);
+		LightSource.draw(lampShader);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
