@@ -1,7 +1,6 @@
-# CG-LAB
-CG-LAB in 2019
-华南理工大学软件学院2019年计算机图形学课程实验
+# CG-experiment
 Computer graphics course experiment in school of software, SCUT in 2019.
+华南理工大学软件学院2019年计算机图形学课程实验
 
 说明：
 * 1.实验环境:Windows 10,Visual Studio 2017 Community.
