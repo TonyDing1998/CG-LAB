@@ -2,7 +2,8 @@
 CG-LAB in 2019
 华南理工大学软件学院2019年计算机图形学课程实验
 Computer graphics course experiment in school of software, SCUT in 2019.
-说明：
+
+*说明：
 * 1.实验环境:Windows 10,Visual Studio 2017 Community.
 * 2.实验基础库：GLFW,GLAD,stb_image.h.
 * 3.实验中通过读取obj及对应的mtl文件导入模型的部分参考了https://blog.csdn.net/tanshengjunjun/article/details/78746019 ，并在其基础上实现了多Mesh模型的导入。详见头文件Mesh.h和Model.h
